@@ -103,12 +103,17 @@ class TypeScriptCDAParser {
             }
             
             // Género con RegExp
-            const genderPatterns = [
+            /* const genderPatterns = [
                 /<administrativeGenderCode[^>]*code\s*=\s*["']([^"']+)["']/i,
                 /<genderCode[^>]*code\s*=\s*["']([^"']+)["']/i,
                 /<gender[^>]*>([^<]+)<\/gender>/i
+            ]; */
+            const genderPatterns = [
+                /<administrativeGenderCode[^>]*code\s*=\s*["']([^"']+)["']/i,
+                /<patient[^>]*>[\s\S]*?<administrativeGenderCode[^>]*code\s*=\s*["']([^"']+)["']/i,
+                /<genderCode[^>]*code\s*=\s*["']([^"']+)["']/i
             ];
-            
+
             for (let pattern of genderPatterns) {
                 const match = xmlContent.match(pattern);
                 if (match) {

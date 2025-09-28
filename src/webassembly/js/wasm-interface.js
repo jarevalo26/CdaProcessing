@@ -59,6 +59,10 @@ class WasmCDAParser {
     async parseFilesWithWasm(files) {
         console.log(`Procesando ${files.length} archivos con WebAssembly...`);
         
+        const startTime = (typeof performance !== 'undefined' && performance.now) 
+                     ? performance.now() 
+                     : Date.now();
+                     
         this.parser.clear();
         
         for (let file of files) {

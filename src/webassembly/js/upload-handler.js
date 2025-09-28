@@ -360,21 +360,39 @@ class UploadHandler {
         
         // 1. WebAssembly Parser
         this.updateLoadingProgress('Procesando con WebAssembly...');
-        const wasmStartTime = performance.now();
+        //const wasmStartTime = performance.now();
+        const wasmStartTime = (typeof performance !== 'undefined' && performance.now) 
+                     ? performance.now() 
+                     : Date.now();
         const wasmStats = await window.wasmParser.parseFiles(this.uploadedFiles);
-        const wasmTime = performance.now() - wasmStartTime;
+        //const wasmTime = performance.now() - wasmStartTime;
+        const wasmTime = ((typeof performance !== 'undefined' && performance.now) 
+                 ? performance.now() 
+                 : Date.now()) - wasmStartTime;
         
         // 2. JavaScript Parser
         this.updateLoadingProgress('Procesando con JavaScript nativo...');
-        const jsStartTime = performance.now();
+        //const jsStartTime = performance.now();
+        const jsStartTime = (typeof performance !== 'undefined' && performance.now) 
+                   ? performance.now() 
+                   : Date.now();
         const jsStats = await window.jsParser.parseFiles(this.uploadedFiles);
-        const jsTime = performance.now() - jsStartTime;
+        //const jsTime = performance.now() - jsStartTime;
+        const jsTime = ((typeof performance !== 'undefined' && performance.now) 
+               ? performance.now() 
+               : Date.now()) - jsStartTime;
         
         // 3. TypeScript Parser
         this.updateLoadingProgress('Procesando con TypeScript...');
-        const tsStartTime = performance.now();
+        //const tsStartTime = performance.now();
+        const tsStartTime = (typeof performance !== 'undefined' && performance.now) 
+                   ? performance.now() 
+                   : Date.now();
         const tsStats = await window.tsParser.parseFiles(this.uploadedFiles);
-        const tsTime = performance.now() - tsStartTime;
+        //const tsTime = performance.now() - tsStartTime;
+        const tsTime = ((typeof performance !== 'undefined' && performance.now) 
+               ? performance.now() 
+               : Date.now()) - tsStartTime;
         
         this.updateLoadingProgress('Calculando resultados...');
         

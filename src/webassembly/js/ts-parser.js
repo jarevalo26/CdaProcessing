@@ -10,7 +10,10 @@ class TypeScriptCDAParser {
     }
 
     async parseFiles(files) {
-        const startTime = performance.now();
+        //const startTime = performance.now();
+        const startTime = (typeof performance !== 'undefined' && performance.now) 
+                     ? performance.now() 
+                     : Date.now();
         this.documents = [];
         
         console.log(`TypeScript Parser: Procesando ${files.length} archivos...`);

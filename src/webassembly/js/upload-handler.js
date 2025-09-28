@@ -521,6 +521,9 @@ class UploadHandler {
     }
     
     createGenderDistribution(genderDist) {
+        console.log('Creando distribución de género:', genderDist);
+        console.log('Total patients:', this.currentStats.total_patients);
+    
         let html = '<div class="stats-list">';
         Object.entries(genderDist).forEach(([gender, count]) => {
             const percentage = ((count / this.currentStats.total_patients) * 100).toFixed(1);

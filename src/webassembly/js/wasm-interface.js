@@ -65,7 +65,8 @@ class WasmCDAParser {
                      : Date.now(); */
 
         this.parser.clear();
-        
+        console.log(`parseFilesWithWasm - startTime: ${startTime}`);
+
         for (let file of files) {
             try {
                 const content = await this.readFileContent(file);

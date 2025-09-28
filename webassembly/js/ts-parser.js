@@ -10,11 +10,10 @@ class TypeScriptCDAParser {
     }
 
     async parseFiles(files) {
-        const startTime = performance.now();
-        /* const startTime = (typeof performance !== 'undefined' && performance.now) 
+        const startTime = (typeof performance !== 'undefined' && performance.now) 
                      ? performance.now() 
                      : Date.now();
-        this.documents = []; */
+        this.documents = [];
         
         console.log(`TypeScript Parser: Procesando ${files.length} archivos...`);
         
@@ -119,11 +118,6 @@ class TypeScriptCDAParser {
             }
             
             // Género con RegExp
-            /* const genderPatterns = [
-                /<administrativeGenderCode[^>]*code\s*=\s*["']([^"']+)["']/i,
-                /<genderCode[^>]*code\s*=\s*["']([^"']+)["']/i,
-                /<gender[^>]*>([^<]+)<\/gender>/i
-            ]; */
             const genderPatterns = [
                 /<administrativeGenderCode[^>]*code\s*=\s*["']([^"']+)["']/i,
                 /<patient[^>]*>[\s\S]*?<administrativeGenderCode[^>]*code\s*=\s*["']([^"']+)["']/i,

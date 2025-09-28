@@ -370,36 +370,30 @@ class UploadHandler {
         
         // 1. WebAssembly Parser
         this.updateLoadingProgress('Procesando con WebAssembly...');
-        //const wasmStartTime = performance.now();
         const wasmStartTime = (typeof performance !== 'undefined' && performance.now) 
                      ? performance.now() 
                      : Date.now();
         const wasmStats = await window.wasmParser.parseFiles(this.uploadedFiles);
-        //const wasmTime = performance.now() - wasmStartTime;
         const wasmTime = ((typeof performance !== 'undefined' && performance.now) 
                  ? performance.now() 
                  : Date.now()) - wasmStartTime;
         
         // 2. JavaScript Parser
         this.updateLoadingProgress('Procesando con JavaScript nativo...');
-        //const jsStartTime = performance.now();
         const jsStartTime = (typeof performance !== 'undefined' && performance.now) 
                    ? performance.now() 
                    : Date.now();
         const jsStats = await window.jsParser.parseFiles(this.uploadedFiles);
-        //const jsTime = performance.now() - jsStartTime;
         const jsTime = ((typeof performance !== 'undefined' && performance.now) 
                ? performance.now() 
                : Date.now()) - jsStartTime;
         
         // 3. TypeScript Parser
         this.updateLoadingProgress('Procesando con TypeScript...');
-        //const tsStartTime = performance.now();
         const tsStartTime = (typeof performance !== 'undefined' && performance.now) 
                    ? performance.now() 
                    : Date.now();
         const tsStats = await window.tsParser.parseFiles(this.uploadedFiles);
-        //const tsTime = performance.now() - tsStartTime;
         const tsTime = ((typeof performance !== 'undefined' && performance.now) 
                ? performance.now() 
                : Date.now()) - tsStartTime;
@@ -436,28 +430,42 @@ class UploadHandler {
         if (!this.benchmarkResults) return;
         
         const results = this.benchmarkResults;
+
+        // Determinar el ganador real
+        const times = {
+            js: results.jsTime,
+            ts: results.tsTime,
+            wasm: results.wasmTime
+        };
         
         // Llenar tiempos de cada parser
         const jsTimeElement = document.getElementById('jsTime');
         const tsTimeElement = document.getElementById('tsTime');
         const wasmTimeElement = document.getElementById('wasmTime');
-        
+
         if (jsTimeElement) jsTimeElement.textContent = results.jsTime;
         if (tsTimeElement) tsTimeElement.textContent = results.tsTime;
         if (wasmTimeElement) wasmTimeElement.textContent = results.wasmTime;
+
+        const fastest = Object.keys(times).reduce((a, b) => times[a] < times[b] ? a : b);
         
         // Llenar speedup relativo
         const jsSpeedupElement = document.getElementById('jsSpeedup');
         const tsSpeedupElement = document.getElementById('tsSpeedup');
+        const wasmResultElement = document.getElementById('wasmResult');
         
-        if (jsSpeedupElement) {
-            const jsSpeedup = (results.jsTime / results.wasmTime).toFixed(1);
-            jsSpeedupElement.textContent = `${jsSpeedup}x más lento`;
-        }
-        
-        if (tsSpeedupElement) {
-            const tsSpeedup = (results.tsTime / results.wasmTime).toFixed(1);
-            tsSpeedupElement.textContent = `${tsSpeedup}x más lento`;
+        if (fastest === 'js') {
+            if (jsSpeedupElement) jsSpeedupElement.textContent = '🏆 Ganador';
+            if (tsSpeedupElement) tsSpeedupElement.textContent = `${(results.tsTime / results.jsTime).toFixed(1)}x más lento`;
+            if (wasmResultElement) wasmResultElement.textContent = `${(results.wasmTime / results.jsTime).toFixed(1)}x más lento`;
+        } else if (fastest === 'ts') {
+            if (jsSpeedupElement) jsSpeedupElement.textContent = `${(results.jsTime / results.tsTime).toFixed(1)}x más lento`;
+            if (tsSpeedupElement) tsSpeedupElement.textContent = '🏆 Ganador';
+            if (wasmResultElement) wasmResultElement.textContent = `${(results.wasmTime / results.tsTime).toFixed(1)}x más lento`;
+        } else {
+            if (jsSpeedupElement) jsSpeedupElement.textContent = `${(results.jsTime / results.wasmTime).toFixed(1)}x más lento`;
+            if (tsSpeedupElement) tsSpeedupElement.textContent = `${(results.tsTime / results.wasmTime).toFixed(1)}x más lento`;
+            if (wasmResultElement) wasmResultElement.textContent = '🏆 Ganador';
         }
         
         console.log('📊 Datos de rendimiento poblados en tercer nivel');

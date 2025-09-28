@@ -10,10 +10,9 @@ class JavaScriptCDAParser {
     }
 
     async parseFiles(files) {
-        const startTime = performance.now();
-        /* const startTime = (typeof performance !== 'undefined' && performance.now) 
+        const startTime = (typeof performance !== 'undefined' && performance.now) 
                      ? performance.now() 
-                     : Date.now(); */
+                     : Date.now();
         this.documents = [];
         
         console.log(`JavaScript Parser: Procesando ${files.length} archivos...`);
@@ -49,7 +48,6 @@ class JavaScriptCDAParser {
         const xmlDoc = parser.parseFromString(xmlContent, "text/xml");
         
         // Verificar errores de parsing
-        //const parserError = xmlDoc.querySelector('parsererror');
         const parserError = xmlDoc.querySelector('parsererror') || xmlDoc.documentElement.tagName === 'parsererror';
         if (parserError) {
             console.error('Error parsing XML:', parserError);
@@ -58,23 +56,9 @@ class JavaScriptCDAParser {
             if (parserError2) {
                 throw new Error('Error al parsear XML: ' + (parserError.textContent || 'Error desconocido'));
             }
-            //throw new Error('Error parsing XML: ' + parserError.textContent);
         }
 
         return this.extractCDAData(xmlDoc, fileName);
-        
-        /* const patient = this.extractPatientInfo(xmlDoc);
-        const diagnoses = this.extractDiagnoses(xmlDoc, fileName);
-        const medications = this.extractMedications(xmlDoc, fileName);
-        
-        return {
-            file_name: fileName,
-            patient: patient,
-            diagnoses: diagnoses,
-            medications: medications,
-            document_date: this.extractDocumentDate(xmlDoc),
-            author: this.extractAuthor(xmlDoc)
-        }; */
     }
 
     extractCDAData(xmlDoc, fileName) {
@@ -135,12 +119,6 @@ class JavaScriptCDAParser {
             }
             
             // Género
-            /* const genderSelectors = [
-                'administrativeGenderCode',
-                'patient administrativeGenderCode',
-                'genderCode'
-            ]; */
-
             const genderSelectors = [
                 'patient > administrativeGenderCode',
                 'patientRole patient administrativeGenderCode',

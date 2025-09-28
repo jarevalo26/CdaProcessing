@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procesador CDA - JavaScript</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🏥 Procesador CDA - JavaScript</h1>
+            <p>Validador y Extractor de Datos Clínicos</p>
+        </header>
+
+        <main class="main-content">
+            <section class="upload-section">
+                <h2>📄 Cargar Documento CDA</h2>
+                <div class="file-input">
+                    <input type="file" id="cdaFile" accept=".xml,.cda" />
+                    <label for="cdaFile">Seleccionar archivo CDA (XML)</label>
+                    <div id="selectedFile" class="selected-file"></div>
+                </div>
+
+                <div class="buttons">
+                    <button class="btn" onclick="processDocument()">🔍 Analizar Documento</button>
+                    <button class="btn secondary" onclick="clearResults()">🗑️ Limpiar Resultados</button>
+                </div>
+            </section>
+
+            <div id="results" class="results hidden"></div>
+        </main>
+    </div>
+    <script src="js/app.js"></script>
+</body>
+</html>

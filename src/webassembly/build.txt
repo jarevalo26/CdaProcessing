@@ -1,0 +1,15 @@
+1. Compilar WebAssembly
+    cd wasm-parser
+    chmod +x build.sh
+    ./build.sh
+
+2. Copiar archivos generados
+    cp pkg/* ../js/
+
+3. Actualizar HTML para incluir WASM
+
+// ---------------------
+// Para aplicar cambios.
+cd wasm-parser
+./build.sh
+cp pkg/* ../js/

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procesador CDA - TypeScript</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🔬 Procesador CDA - TypeScript</h1>
+            <p>Analizador Semántico y Transformador de Documentos Clínicos</p>
+        </header>
+
+        <main class="main-content">
+            <section class="upload-section">
+                <h2>📄 Cargar Documento CDA</h2>
+                <div class="file-input">
+                    <input type="file" id="cdaFile" accept=".xml,.cda" />
+                    <label for="cdaFile">Seleccionar archivo CDA (XML)</label>
+                    <div id="selectedFile" class="selected-file"></div>
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn" onclick="analyzeDocument()">🧠 Análisis Semántico</button>
+                    <button class="btn transform" onclick="transformDocument()">🔄 Transformar a JSON</button>
+                    <button class="btn secondary" onclick="clearResults()">🗑️ Limpiar</button>
+                </div>
+            </section>
+
+            <div id="results" class="results hidden"></div>
+        </main>
+    </div>
+    <script src="js/app.js"></script>
+</body>
+</html>

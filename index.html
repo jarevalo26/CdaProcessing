@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Proyecto comparativo de procesamiento de documentos CDA usando JavaScript, TypeScript y WebAssembly">
+    <meta name="keywords" content="CDA, XML, JavaScript, TypeScript, WebAssembly, Estándares Web, Ingeniería Web">
+    <meta name="author" content="Máster en Ingeniería Web">
+    <title>Procesamiento de Documentos CDA - Comparativa de Tecnologías Web</title>
+    <link rel="stylesheet" href="css/styeles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="hero">
+                <h1>Procesamiento de Documentos CDA</h1>
+                <p class="subtitle">Análisis Comparativo de Tecnologías Web</p>
+                <p class="subtitle">John A. Arevalo T. - uo312232</p>
+                <p class="course-info">Estándares y Computación Web - Máster en Ingeniería Web</p>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <section class="intro">
+                <h2>Objetivo del Proyecto</h2>
+                <p>
+                    Este proyecto académico presenta una comparativa exhaustiva del rendimiento y características 
+                    de diferentes tecnologías web para el procesamiento de documentos XML. Se ha elegido el 
+                    <strong>Clinical Document Architecture (CDA)</strong> como lenguaje derivado de XML para 
+                    implementar tres aplicaciones especializadas.
+                </p>
+                <div class="highlight">
+                    <p>
+                        <strong>¿Por qué CDA?</strong> El Clinical Document Architecture es un estándar HL7 
+                        que define la estructura y semántica de documentos clínicos. Su complejidad estructural 
+                        y riqueza semántica lo convierten en un caso de estudio ideal para evaluar el 
+                        rendimiento de diferentes tecnologías de procesamiento XML.
+                    </p>
+                </div>
+                <p>
+                    Cada implementación aprovecha las características intrínsecas de su tecnología respectiva, 
+                    permitiendo una evaluación objetiva de rendimiento, facilidad de desarrollo y 
+                    mantenibilidad del código.
+                </p>
+            </section>
+
+            <section class="section">
+                <h2>Aplicaciones Desarrolladas</h2>
+                <div class="apps-grid">
+                    <article class="app-card javascript">
+                        <h3>
+                            Validador y Extractor
+                            <span class="tech-badge js">JavaScript</span>
+                        </h3>
+                        <p>
+                            Aplicación especializada en la validación de estructura y contenido de documentos 
+                            CDA, con capacidades avanzadas de extracción de datos clínicos específicos.
+                        </p>
+                        <ul class="features">
+                            <li>Validación de esquemas XML y estructura CDA</li>
+                            <li>Extracción de datos demográficos del paciente</li>
+                            <li>Identificación de secciones clínicas</li>
+                            <li>Verificación de códigos terminológicos</li>
+                            <li>Generación de reportes de validación</li>
+                        </ul>
+                        <a href="src/javascript/index.html" target="_blank" class="btn" role="button">Acceder a la Aplicación</a>
+                    </article>
+
+                    <article class="app-card typescript">
+                        <h3>
+                            Analizador Semántico
+                            <span class="tech-badge ts">TypeScript</span>
+                        </h3>
+                        <p>
+                            Herramienta de análisis semántico profundo que transforma documentos CDA en 
+                            estructuras de datos optimizadas para análisis clínico.
+                        </p>
+                        <ul class="features">
+                            <li>Análisis semántico de contenido clínico</li>
+                            <li>Identificación de dominios clínicos</li>
+                            <li>Mapeo de terminologías estándar</li>
+                            <li>Transformación a formato JSON estructurado</li>
+                            <li>Métricas de calidad de datos</li>
+                        </ul>
+                        <a href="src/typescript/index.html" target="_blank" class="btn" role="button">Acceder a la Aplicación</a>
+                    </article>
+
+                    <article class="app-card webassembly">
+                        <h3>
+                            Procesador Estadístico
+                            <span class="tech-badge wasm">WebAssembly</span>
+                        </h3>
+                        <p>
+                            Motor de procesamiento de alto rendimiento que realiza análisis estadístico 
+                            masivo de documentos CDA con capacidades de benchmarking integradas.
+                        </p>
+                        <ul class="features">
+                            <li>Procesamiento masivo de documentos</li>
+                            <li>Análisis estadístico de patrones clínicos</li>
+                            <li>Benchmarking de rendimiento en tiempo real</li>
+                            <li>Agregación de datos de múltiples fuentes</li>
+                            <li>Optimización de memoria y CPU</li>
+                        </ul>
+                        <a href="src/webassembly/index.html" target="_blank" class="btn" role="button">Acceder a la Aplicación</a>
+                    </article>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="technical-overview">
+                    <h2>Características Técnicas por Tecnología</h2>
+                    <div class="tech-grid">
+                        <div class="tech-item">
+                            <h4>JavaScript - Flexibilidad y DOM</h4>
+                            <p>
+                                Aprovecha la manipulación nativa del DOM y las APIs web estándar para 
+                                validación en tiempo real. Utiliza expresiones regulares optimizadas 
+                                y parsing incremental para mejorar la experiencia de usuario.
+                            </p>
+                        </div>
+                        <div class="tech-item">
+                            <h4>TypeScript - Tipado y Estructuras</h4>
+                            <p>
+                                Implementa interfaces TypeScript complejas que modelan fidedignamente 
+                                la estructura CDA. El sistema de tipos permite detección temprana de 
+                                errores y optimizaciones de compilación.
+                            </p>
+                        </div>
+                        <div class="tech-item">
+                            <h4>WebAssembly - Rendimiento Nativo</h4>
+                            <p>
+                                Compilado desde C++/Rust para maximizar el rendimiento computacional. 
+                                Gestión manual de memoria y algoritmos optimizados para procesamiento 
+                                de grandes volúmenes de datos.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Proyecto Académico</h4>
+                    <p>Comparativa de Tecnologías Web</p>
+                    <p>Procesamiento de Documentos XML/CDA</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Contexto Educativo</h4>
+                    <p>Estándares y Computación Web</p>
+                    <p>Máster en Ingeniería Web</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Tecnologías</h4>
+                    <p>JavaScript ES6+</p>
+                    <p>TypeScript 4.0+</p>
+                    <p>WebAssembly (C++/Rust)</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 - Proyecto de Estándares y Computación Web. Desarrollado para fines académicos.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CDA Analyzer - WebAssembly Medical Document Processor</title>
+    
+    <!-- Enlaces CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/charts.css">
+    
+    <!-- Meta información -->
+    <meta name="description" content="Analizador de documentos CDA con WebAssembly para estadísticas médicas y benchmarking">
+    <meta name="author" content="Proyecto Académico - Estándares y Computación Web">
+</head>
+<body class="cda-app">
+    <!-- Contenedor Principal -->
+    <div class="cda-container">
+        
+        <!-- Header Principal -->
+        <header class="cda-header">
+            <h1 class="cda-header__title">CDA Analyzer</h1>
+            <p class="cda-header__subtitle">Procesador de Documentos Clínicos CDA con Análisis Estadístico y Benchmarking</p>
+        </header>
+
+        <!-- Contenido Principal -->
+        <main class="cda-main">
+            
+            <!-- Sección de Carga de Archivos -->
+            <section class="cda-upload-section" id="uploadZone">
+                <span class="cda-upload-icon" aria-hidden="true">📁</span>
+                <h3 class="cda-upload-title">Arrastra archivos CDA aquí</h3>
+                <p class="cda-upload-subtitle">o haz clic para seleccionar</p>
+                <input type="file" id="cda-file-input" multiple accept=".xml,.cda" class="cda-file-input" aria-label="Seleccionar archivos CDA">
+            </section>
+            
+            <!-- Botones de Acción -->
+            <div class="cda-buttons-container">
+                <button type="button" class="cda-button cda-button--primary" id="process-btn" disabled>
+                    <span aria-hidden="true">📊</span>
+                    Procesar Archivos
+                </button>
+                <button type="button" class="cda-button cda-button--secondary" id="clear-btn">
+                    <span aria-hidden="true">🗑️</span>
+                    Limpiar
+                </button>
+            </div>
+
+            <!-- Dashboard Principal - SOLO MÉDICO -->
+            <div class="dashboard-main" id="main-dashboard" style="display: none;">
+                
+                <!-- Dashboard Médico con estructura de TRES niveles -->
+                <div class="dashboard-wrapper">
+                    
+                    <!-- NIVEL 1: Métricas Generales - Una fila completa arriba -->
+                    <section class="metrics-section" aria-labelledby="metrics-title">
+                        <div class="cda-card">
+                            <div class="cda-card__header">
+                                <h3 class="cda-card__title" id="metrics-title">
+                                    <span aria-hidden="true">📋</span>
+                                    Métricas Generales
+                                </h3>
+                            </div>
+                            <div class="cda-card__body">
+                                <div class="metrics-row">
+                                    <div class="metric-card">
+                                        <div class="metric-value" id="totalDocuments" aria-live="polite">-</div>
+                                        <div class="metric-label">Documentos</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-value" id="totalPatients" aria-live="polite">-</div>
+                                        <div class="metric-label">Pacientes</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-value" id="avgAge" aria-live="polite">-</div>
+                                        <div class="metric-label">Edad Promedio</div>
+                                    </div>
+                                    <div class="metric-card">
+                                        <div class="metric-value" id="processTime" aria-live="polite">-</div>
+                                        <div class="metric-label">Tiempo Total (ms)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- NIVEL 2: Tres gráficos médicos en fila horizontal -->
+                    <section class="charts-section" aria-label="Gráficos estadísticos médicos">
+                        <div class="charts-row">
+                            
+                            <!-- Diagnósticos -->
+                            <div class="cda-card">
+                                <div class="cda-card__header">
+                                    <h3 class="cda-card__title">
+                                        <span aria-hidden="true">📈</span>
+                                        Diagnósticos Más Frecuentes
+                                    </h3>
+                                </div>
+                                <div class="cda-card__body">
+                                    <div class="cda-chart-container" id="diagnosisChart" role="img" aria-label="Gráfico de diagnósticos más frecuentes">
+                                        <div class="cda-chart-placeholder">
+                                            Los gráficos aparecerán aquí después del análisis
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Distribución Demográfica -->
+                            <div class="cda-card">
+                                <div class="cda-card__header">
+                                    <h3 class="cda-card__title">
+                                        <span aria-hidden="true">👥</span>
+                                        Distribución Demográfica
+                                    </h3>
+                                </div>
+                                <div class="cda-card__body">
+                                    <div class="cda-chart-container" id="demographicsChart" role="img" aria-label="Gráfico de distribución demográfica">
+                                        <div class="cda-chart-placeholder">
+                                            Gráfico circular de demografía
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Medicamentos -->
+                            <div class="cda-card">
+                                <div class="cda-card__header">
+                                    <h3 class="cda-card__title">
+                                        <span aria-hidden="true">💊</span>
+                                        Medicamentos Más Prescritos
+                                    </h3>
+                                </div>
+                                <div class="cda-card__body">
+                                    <div class="cda-chart-container" id="medicationsChart" role="img" aria-label="Lista de medicamentos más prescritos">
+                                        <div class="cda-chart-placeholder">
+                                            Lista de medicamentos frecuentes
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </section>
+
+                    <!-- NIVEL 3: Comparativo de Rendimiento - Tres tarjetas horizontales -->
+                    <section class="performance-section" aria-label="Comparativo de rendimiento de parsers" id="performance-section" style="display: none;">
+                        <div class="cda-card">
+                            <div class="cda-card__header">
+                                <h3 class="cda-card__title">
+                                    <span aria-hidden="true">⚡</span>
+                                    Comparativo de Rendimiento de Parsers
+                                </h3>
+                            </div>
+                            <div class="cda-card__body">
+                                <div class="performance-row">
+                                    
+                                    <!-- JavaScript Parser -->
+                                    <div class="performance-card performance-card--js">
+                                        <div class="performance-header">
+                                            <div class="performance-icon">🟡</div>
+                                            <div class="performance-title">JavaScript</div>
+                                            <div class="performance-subtitle">DOMParser nativo</div>
+                                        </div>
+                                        <div class="performance-metrics">
+                                            <div class="performance-time" id="jsTime">-</div>
+                                            <div class="performance-label">millisegundos</div>
+                                        </div>
+                                        <div class="performance-details">
+                                            <div class="performance-detail">
+                                                <span class="detail-label">Enfoque:</span>
+                                                <span class="detail-value">DOMParser del Navegador</span>
+                                            </div>
+                                            <div class="performance-detail">
+                                                <span class="detail-label">Aceleración:</span>
+                                                <span class="detail-value" id="jsSpeedup">-</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- TypeScript Parser -->
+                                    <div class="performance-card performance-card--ts">
+                                        <div class="performance-header">
+                                            <div class="performance-icon">🔵</div>
+                                            <div class="performance-title">TypeScript</div>
+                                            <div class="performance-subtitle">RegExp + Manual</div>
+                                        </div>
+                                        <div class="performance-metrics">
+                                            <div class="performance-time" id="tsTime">-</div>
+                                            <div class="performance-label">millisegundos</div>
+                                        </div>
+                                        <div class="performance-details">
+                                            <div class="performance-detail">
+                                                <span class="detail-label">Enfoque:</span>
+                                                <span class="detail-value">Parsing con Expresiones Regulares</span>
+                                            </div>
+                                            <div class="performance-detail">
+                                                <span class="detail-label">Aceleración:</span>
+                                                <span class="detail-value" id="tsSpeedup">-</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- WebAssembly Parser -->
+                                    <div class="performance-card performance-card--wasm">
+                                        <div class="performance-header">
+                                            <div class="performance-icon">🟢</div>
+                                            <div class="performance-title">WebAssembly</div>
+                                            <div class="performance-subtitle">SAX Optimizado</div>
+                                        </div>
+                                        <div class="performance-metrics">
+                                            <div class="performance-time" id="wasmTime">-</div>
+                                            <div class="performance-label">millisegundos</div>
+                                        </div>
+                                        <div class="performance-details">
+                                            <div class="performance-detail">
+                                                <span class="detail-label">Enfoque:</span>
+                                                <span class="detail-value">Parser SAX en Rust</span>
+                                            </div>
+                                            <div class="performance-detail">
+                                                <span class="detail-label">Ganador:</span>
+                                                <span class="detail-value performance-winner">🏆 Más Rápido</span>
+                                            </div>
+                                        </div>
+                                    </div>                                    
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="cda-loading-overlay" id="loadingOverlay" role="dialog" aria-modal="true" aria-labelledby="loadingText">
+        <div class="cda-loading-spinner" aria-hidden="true"></div>
+        <div class="cda-loading-text" id="loadingText">Procesando documentos CDA...</div>
+        <div class="cda-loading-progress" id="loadingProgress" style="margin-top: 20px; color: white; font-size: 14px;">
+            Iniciando benchmark comparativo...
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/wasm-interface.js"></script>
+    <script src="js/js-parser.js"></script>
+    <script src="js/ts-parser.js"></script>
+    <script src="js/upload-handler.js"></script>
+</body>
+</html>

@@ -105,10 +105,17 @@ class JavaScriptCDAParser {
             }
             
             // Género
-            const genderSelectors = [
+            /* const genderSelectors = [
                 'administrativeGenderCode',
                 'patient administrativeGenderCode',
                 'genderCode'
+            ]; */
+
+            const genderSelectors = [
+                'patient > administrativeGenderCode',
+                'patientRole patient administrativeGenderCode',
+                'recordTarget patientRole patient administrativeGenderCode',
+                'administrativeGenderCode'
             ];
             
             for (let selector of genderSelectors) {

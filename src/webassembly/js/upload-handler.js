@@ -467,8 +467,12 @@ class UploadHandler {
         document.getElementById('avgAge').textContent = this.currentStats.average_age ? 
             Math.round(this.currentStats.average_age) + ' años' : 'N/A';
         document.getElementById('processTime').textContent = this.currentStats.processing_time_ms || '0';
-    
+
         this.showDetailedInfo();
+    
+        console.log('WASM Stats:', this.benchmarkResults.wasmStats);
+        console.log('JS Stats:', this.benchmarkResults.jsStats);
+        console.log('TS Stats:', this.benchmarkResults.tsStats);
     }
     
     showSimpleInfo() {

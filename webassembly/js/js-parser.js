@@ -38,16 +38,46 @@ class JavaScriptCDAParser {
     }
 
     async parseXMLContent(fileName, xmlContent) {
+        // Limpiar el contenido XML antes de parsear
+        const cleanedXML = xmlContent
+            .replace(/^\uFEFF/, '') // Eliminar BOM si existe
+            .replace(/&(?![a-zA-Z0-9#]{1,6};)/g, '&amp;') // Escapar & no válidos
+            .trim();
+
         // Usar DOMParser nativo del navegador
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(xmlContent, "text/xml");
         
         // Verificar errores de parsing
-        const parserError = xmlDoc.querySelector('parsererror');
+        //const parserError = xmlDoc.querySelector('parsererror');
+        const parserError = xmlDoc.querySelector('parsererror') || xmlDoc.documentElement.tagName === 'parsererror';
         if (parserError) {
-            throw new Error('Error parsing XML: ' + parserError.textContent);
+            console.error('Error parsing XML:', parserError);
+            const xmlDoc2 = parser.parseFromString(cleanedXML, "text/xml");
+            const parserError2 = xmlDoc2.querySelector('parsererror');
+            if (parserError2) {
+                throw new Error('Error al parsear XML: ' + (parserError.textContent || 'Error desconocido'));
+            }
+            //throw new Error('Error parsing XML: ' + parserError.textContent);
         }
+
+        return this.extractCDAData(xmlDoc, fileName);
         
+        /* const patient = this.extractPatientInfo(xmlDoc);
+        const diagnoses = this.extractDiagnoses(xmlDoc, fileName);
+        const medications = this.extractMedications(xmlDoc, fileName);
+        
+        return {
+            file_name: fileName,
+            patient: patient,
+            diagnoses: diagnoses,
+            medications: medications,
+            document_date: this.extractDocumentDate(xmlDoc),
+            author: this.extractAuthor(xmlDoc)
+        }; */
+    }
+
+    extractCDAData(xmlDoc, fileName) {
         const patient = this.extractPatientInfo(xmlDoc);
         const diagnoses = this.extractDiagnoses(xmlDoc, fileName);
         const medications = this.extractMedications(xmlDoc, fileName);

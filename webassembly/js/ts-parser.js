@@ -40,6 +40,22 @@ class TypeScriptCDAParser {
     async parseXMLWithRegExp(fileName, xmlContent) {
         // Enfoque TypeScript: usar RegExp para extraer información
         // Simula un approach más manual y estructurado
+
+        // Limpiar contenido XML para compatibilidad HTTP/HTTPS
+        const cleanedXML = xmlContent
+            .replace(/^\uFEFF/, '') // Eliminar BOM
+            .replace(/\r\n/g, '\n')  // Normalizar saltos de línea
+            .trim();
+
+        // Debug específico para género
+        console.log(`=== DEBUG GENERO TS ${fileName} ===`);
+        const hasGenderCode = cleanedXML.includes('administrativeGenderCode');
+        console.log('¿Contiene administrativeGenderCode?', hasGenderCode);
+        
+        if (hasGenderCode) {
+            const genderMatch = cleanedXML.match(/<administrativeGenderCode[^>]*code\s*=\s*["']([^"']+)["']/i);
+            console.log('Match encontrado:', genderMatch);
+        }
         
         const patient = this.extractPatientWithRegExp(xmlContent);
         const diagnoses = this.extractDiagnosesWithRegExp(xmlContent, fileName);

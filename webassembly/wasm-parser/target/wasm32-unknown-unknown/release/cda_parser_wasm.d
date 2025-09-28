@@ -1,0 +1,1 @@
+/Users/John/Projects/MasterIngeWeb/CdaProcessing/webassembly/wasm-parser/target/wasm32-unknown-unknown/release/cda_parser_wasm.wasm: /Users/John/Projects/MasterIngeWeb/CdaProcessing/webassembly/wasm-parser/src/lib.rs

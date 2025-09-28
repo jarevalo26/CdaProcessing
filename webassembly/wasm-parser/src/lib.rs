@@ -197,9 +197,15 @@ impl CDAParser {
             if let Ok(attr) = attr {
                 let attr_name = String::from_utf8_lossy(attr.key.as_ref()).to_lowercase();
                 let attr_value = String::from_utf8_lossy(&attr.value);
+                
+                // Debug para género
+                if tag_name == "administrativegendercode" {
+                    console_log!("RUST DEBUG: Encontrado {} con atributo {} = {}", tag_name, attr_name, attr_value);
+                }
 
                 match (tag_name, attr_name.as_str()) {
                     ("administrativegendercode", "code") => {
+                        console_log!("RUST: Extrayendo género: {}", attr_value);
                         document.patient.gender = Some(self.normalize_gender(&attr_value));
                     }
                     ("birthtime", "value") => {
@@ -420,11 +426,24 @@ impl CDAParser {
     }
 
     fn normalize_gender(&self, gender_code: &str) -> String {
-        match gender_code.to_uppercase().as_str() {
+        console_log!("RUST normalize_gender: input='{}' len={}", gender_code, gender_code.len());
+        let result = match gender_code.to_uppercase().as_str() {
+            "M" | "MALE" => "M".to_string(),
+            "F" | "FEMALE" => "F".to_string(),
+            _ => {
+                console_log!("RUST: Género no reconocido: '{}'", gender_code);
+                "Unknown".to_string()
+            }
+        };
+
+        /* match gender_code.to_uppercase().as_str() {
             "M" | "MALE" => "M".to_string(),
             "F" | "FEMALE" => "F".to_string(),
             _ => "Unknown".to_string(),
-        }
+        } */
+        
+        console_log!("RUST normalize_gender: output='{}'", result);
+        result
     }
 
     fn calculate_age_from_hl7_date(&self, hl7_date: &str) -> Option<u32> {

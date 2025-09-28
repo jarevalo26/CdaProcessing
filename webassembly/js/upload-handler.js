@@ -327,6 +327,16 @@ class UploadHandler {
             
             // Usar datos médicos del WebAssembly
             this.currentStats = this.benchmarkResults.wasmStats;
+            let tsStats = this.benchmarkResults.tsStats;
+
+            // Combinar: usar WebAssembly como base pero completar con JavaScript
+            if (!this.currentStats.gender_distribution || this.currentStats.gender_distribution.size === 0 || 
+                (this.currentStats.gender_distribution.size === 1 && this.currentStats.gender_distribution.has('Unknown'))) {
+                
+                console.log('WebAssembly falló en género, usando datos de JavaScript');
+                this.currentStats.gender_distribution = tsStats.gender_distribution;
+                this.currentStats.average_age = tsStats.average_age;
+            }
             
             console.log('✅ Benchmark completado:', this.benchmarkResults);
             
@@ -527,6 +537,11 @@ class UploadHandler {
     createGenderDistribution(genderDist) {
         console.log('Creando distribución de género:', genderDist);
         console.log('Total patients:', this.currentStats.total_patients);
+
+        // Verificar si genderDist está vacío
+        if (!genderDist || Object.keys(genderDist).length === 0) {
+            return '<div class="info-message">No se encontró información demográfica</div>';
+        }
     
         let html = '<div class="stats-list">';
         Object.entries(genderDist).forEach(([gender, count]) => {

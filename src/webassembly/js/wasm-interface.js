@@ -44,7 +44,10 @@ class WasmCDAParser {
             throw new Error('Parser no está inicializado');
         }
         
-        const startTime = performance.now();
+        //const startTime = performance.now();
+        const startTime = (typeof performance !== 'undefined' && performance.now) 
+                     ? performance.now() 
+                     : Date.now();
         
         if (this.useWasm) {
             return await this.parseFilesWithWasm(files);
@@ -78,7 +81,10 @@ class WasmCDAParser {
     async parseFilesWithFallback(files) {
         console.log(`Procesando ${files.length} archivos con fallback JavaScript...`);
         
-        const startTime = performance.now();
+        //const startTime = performance.now();
+        const startTime = (typeof performance !== 'undefined' && performance.now) 
+                     ? performance.now() 
+                     : Date.now();
         this.documents = [];
         
         // Simular procesamiento de archivos

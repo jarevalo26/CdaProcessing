@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ClinicalDocument xmlns="urn:hl7-org:v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
+    <templateId root="2.16.840.1.113883.10.20.1"/>
+    <id root="2.16.840.1.113883.19.4" extension="HC001"/>
+    <code code="34133-9" codeSystem="2.16.840.1.113883.6.1" 
+          codeSystemName="LOINC" displayName="Summarization of episode note"/>
+    <title>Historia Clínica - Paciente Hipertenso Diabético</title>
+    <effectiveTime value="20240115103000"/>
+    <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25" displayName="Normal"/>
+    <languageCode code="es-ES"/>
+    
+    <recordTarget>
+        <patientRole>
+            <id root="2.16.840.1.113883.19.4" extension="P001-456-789"/>
+            <addr use="HP">
+                <streetAddressLine>Avenida Principal 123</streetAddressLine>
+                <city>Madrid</city>
+                <state>Madrid</state>
+                <postalCode>28001</postalCode>
+                <country>España</country>
+            </addr>
+            <telecom use="HP" value="tel:+34-91-555-0101"/>
+            <patient>
+                <name use="L">
+                    <given>Carlos</given>
+                    <given>José</given>
+                    <family>Martínez</family>
+                </name>
+                <administrativeGenderCode code="M" codeSystem="2.16.840.1.113883.5.1" displayName="Male"/>
+                <birthTime value="19720515"/>
+                <raceCode code="2106-3" codeSystem="2.16.840.1.113883.6.238" displayName="White"/>
+                <ethnicGroupCode code="2135-2" codeSystem="2.16.840.1.113883.6.238" displayName="Hispanic or Latino"/>
+            </patient>
+        </patientRole>
+    </recordTarget>
+    
+    <author>
+        <time value="20240115103000"/>
+        <assignedAuthor>
+            <id root="2.16.840.1.113883.19.4" extension="DR001"/>
+            <code code="207R00000X" codeSystem="2.16.840.1.113883.6.101" displayName="Internal Medicine"/>
+            <addr>
+                <streetAddressLine>Centro de Salud Norte</streetAddressLine>
+                <city>Madrid</city>
+                <state>Madrid</state>
+                <postalCode>28003</postalCode>
+            </addr>
+            <assignedPerson>
+                <name>
+                    <given>Elena</given>
+                    <family>García</family>
+                    <prefix>Dra.</prefix>
+                </name>
+            </assignedPerson>
+        </assignedAuthor>
+    </author>
+    
+    <component>
+        <structuredBody>
+            <component>
+                <section>
+                    <templateId root="2.16.840.1.113883.10.20.1.11"/>
+                    <code code="10160-0" codeSystem="2.16.840.1.113883.6.1" 
+                          codeSystemName="LOINC" displayName="History of medication use"/>
+                    <title>Medicamentos Actuales</title>
+                    <text>Paciente con tratamiento para diabetes e hipertensión.</text>
+                    <entry>
+                        <substanceAdministration classCode="SBADM" moodCode="EVN">
+                            <statusCode code="active"/>
+                            <effectiveTime xsi:type="IVL_TS">
+                                <low value="20230101"/>
+                            </effectiveTime>
+                            <routeCode code="PO" codeSystem="2.16.840.1.113883.5.112" displayName="Oral"/>
+                            <doseQuantity value="850" unit="mg"/>
+                            <consumable>
+                                <manufacturedProduct>
+                                    <manufacturedMaterial>
+                                        <code code="1364435" codeSystem="2.16.840.1.113883.6.88" 
+                                              displayName="Metformin 850mg"/>
+                                        <name>Metformina</name>
+                                    </manufacturedMaterial>
+                                </manufacturedProduct>
+                            </consumable>
+                        </substanceAdministration>
+                    </entry>
+                    <entry>
+                        <substanceAdministration classCode="SBADM" moodCode="EVN">
+                            <statusCode code="active"/>
+                            <routeCode code="PO" codeSystem="2.16.840.1.113883.5.112" displayName="Oral"/>
+                            <doseQuantity value="50" unit="mg"/>
+                            <consumable>
+                                <manufacturedProduct>
+                                    <manufacturedMaterial>
+                                        <code code="314076" codeSystem="2.16.840.1.113883.6.88" 
+                                              displayName="Enalapril 50mg"/>
+                                        <name>Enalapril</name>
+                                    </manufacturedMaterial>
+                                </manufacturedProduct>
+                            </consumable>
+                        </substanceAdministration>
+                    </entry>
+                </section>
+            </component>
+            
+            <component>
+                <section>
+                    <templateId root="2.16.840.1.113883.10.20.1.14"/>
+                    <code code="30954-2" codeSystem="2.16.840.1.113883.6.1" 
+                          displayName="Relevant diagnostic tests and/or laboratory data"/>
+                    <title>Resultados de Laboratorio</title>
+                    <entry>
+                        <observation classCode="OBS" moodCode="EVN">
+                            <code code="2339-0" codeSystem="2.16.840.1.113883.6.1" 
+                                  displayName="Glucose"/>
+                            <statusCode code="completed"/>
+                            <effectiveTime value="20240110"/>
+                            <value xsi:type="PQ" value="148" unit="mg/dL"/>
+                            <interpretationCode code="H" codeSystem="2.16.840.1.113883.5.83" 
+                                              displayName="High"/>
+                        </observation>
+                    </entry>
+                </section>
+            </component>
+            
+            <component>
+                <section>
+                    <templateId root="2.16.840.1.113883.10.20.1.16"/>
+                    <code code="8716-3" codeSystem="2.16.840.1.113883.6.1" 
+                          displayName="Vital signs"/>
+                    <title>Signos Vitales</title>
+                    <entry>
+                        <observation classCode="OBS" moodCode="EVN">
+                            <code code="8480-6" codeSystem="2.16.840.1.113883.6.1" 
+                                  displayName="Systolic blood pressure"/>
+                            <statusCode code="completed"/>
+                            <effectiveTime value="20240115"/>
+                            <value xsi:type="PQ" value="145" unit="mm[Hg]"/>
+                        </observation>
+                    </entry>
+                    <entry>
+                        <observation classCode="OBS" moodCode="EVN">
+                            <code code="8462-4" codeSystem="2.16.840.1.113883.6.1" 
+                                  displayName="Diastolic blood pressure"/>
+                            <statusCode code="completed"/>
+                            <effectiveTime value="20240115"/>
+                            <value xsi:type="PQ" value="92" unit="mm[Hg]"/>
+                        </observation>
+                    </entry>
+                </section>
+            </component>
+        </structuredBody>
+    </component>
+</ClinicalDocument>

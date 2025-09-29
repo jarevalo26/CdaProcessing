@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ClinicalDocument xmlns="urn:hl7-org:v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
+    <templateId root="2.16.840.1.113883.10.20.1"/>
+    <id root="2.16.840.1.113883.19.4" extension="c266"/>
+    <code code="34133-9" codeSystem="2.16.840.1.113883.6.1" 
+          codeSystemName="LOINC" displayName="Summarization of episode note"/>
+    <title>Documento CDA de Ejemplo Avanzado</title>
+    <effectiveTime value="20240115120000"/>
+    <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25" displayName="Normal"/>
+    <languageCode code="es-ES"/>
+    
+    <recordTarget>
+        <patientRole>
+            <id root="2.16.840.1.113883.19.4" extension="996-756-495"/>
+            <addr use="HP">
+                <streetAddressLine>Calle Gran Vía 28</streetAddressLine>
+                <city>Madrid</city>
+                <state>Madrid</state>
+                <postalCode>28013</postalCode>
+                <country>España</country>
+            </addr>
+            <telecom use="HP" value="tel:+34-91-123-4567"/>
+            <patient>
+                <name use="L">
+                    <given>Ana María</given>
+                    <family>González</family>
+                </name>
+                <administrativeGenderCode code="F" codeSystem="2.16.840.1.113883.5.1" displayName="Female"/>
+                <birthTime value="19850315"/>
+                <raceCode code="2106-3" codeSystem="2.16.840.1.113883.6.238" displayName="White"/>
+                <ethnicGroupCode code="2186-5" codeSystem="2.16.840.1.113883.6.238" displayName="Not Hispanic or Latino"/>
+            </patient>
+        </patientRole>
+    </recordTarget>
+    
+    <author>
+        <time value="20240115120000"/>
+        <assignedAuthor>
+            <id root="2.16.840.1.113883.19.4" extension="KP00017"/>
+            <code code="207Q00000X" codeSystem="2.16.840.1.113883.6.101" displayName="Family Medicine"/>
+            <addr>
+                <streetAddressLine>Hospital Universitario</streetAddressLine>
+                <city>Madrid</city>
+                <state>Madrid</state>
+                <postalCode>28040</postalCode>
+            </addr>
+            <assignedPerson>
+                <name>
+                    <given>Carlos</given>
+                    <family>Rodríguez</family>
+                    <prefix>Dr.</prefix>
+                </name>
+            </assignedPerson>
+            <representedOrganization>
+                <name>Hospital Universitario La Paz</name>
+                <telecom use="WP" value="tel:+34-91-727-7000"/>
+                <addr>
+                    <streetAddressLine>Paseo de la Castellana 261</streetAddressLine>
+                    <city>Madrid</city>
+                    <state>Madrid</state>
+                    <postalCode>28046</postalCode>
+                </addr>
+            </representedOrganization>
+        </assignedAuthor>
+    </author>
+    
+    <custodian>
+        <assignedCustodian>
+            <representedCustodianOrganization>
+                <id root="2.16.840.1.113883.19.4"/>
+                <name>Hospital Universitario La Paz</name>
+            </representedCustodianOrganization>
+        </assignedCustodian>
+    </custodian>
+    
+    <component>
+        <structuredBody>
+            <component>
+                <section>
+                    <templateId root="2.16.840.1.113883.10.20.1.11"/>
+                    <code code="10160-0" codeSystem="2.16.840.1.113883.6.1" 
+                          codeSystemName="LOINC" displayName="History of medication use"/>
+                    <title>Medicamentos Actuales</title>
+                    <text>Paciente en tratamiento con antihipertensivos y anticoagulantes.</text>
+                    <entry>
+                        <substanceAdministration classCode="SBADM" moodCode="EVN">
+                            <templateId root="2.16.840.1.113883.10.20.1.24"/>
+                            <statusCode code="active"/>
+                            <effectiveTime xsi:type="IVL_TS">
+                                <low value="20240101"/>
+                                <high value="20241231"/>
+                            </effectiveTime>
+                            <routeCode code="PO" codeSystem="2.16.840.1.113883.5.112" displayName="Oral"/>
+                            <doseQuantity value="10" unit="mg"/>
+                            <consumable>
+                                <manufacturedProduct>
+                                    <templateId root="2.16.840.1.113883.10.20.1.53"/>
+                                    <manufacturedMaterial>
+                                        <code code="314076" codeSystem="2.16.840.1.113883.6.88" 
+                                              codeSystemName="RxNorm" displayName="Enalapril 10mg"/>
+                                        <name>Enalapril</name>
+                                    </manufacturedMaterial>
+                                </manufacturedProduct>
+                            </consumable>
+                        </substanceAdministration>
+                    </entry>
+                    <entry>
+                        <substanceAdministration classCode="SBADM" moodCode="EVN">
+                            <statusCode code="active"/>
+                            <routeCode code="PO" codeSystem="2.16.840.1.113883.5.112" displayName="Oral"/>
+                            <doseQuantity value="5" unit="mg"/>
+                            <consumable>
+                                <manufacturedProduct>
+                                    <manufacturedMaterial>
+                                        <code code="855332" codeSystem="2.16.840.1.113883.6.88" 
+                                              displayName="Warfarin 5mg"/>
+                                        <name>Warfarina</name>
+                                    </manufacturedMaterial>
+                                </manufacturedProduct>
+                            </consumable>
+                        </substanceAdministration>
+                    </entry>
+                </section>
+            </component>
+            
+            <component>
+                <section>
+                    <templateId root="2.16.840.1.113883.10.20.1.14"/>
+                    <code code="30954-2" codeSystem="2.16.840.1.113883.6.1" 
+                          displayName="Relevant diagnostic tests and/or laboratory data"/>
+                    <title>Resultados de Laboratorio</title>
+                    <text>Análisis de sangre reciente muestra valores dentro del rango normal.</text>
+                    <entry>
+                        <observation classCode="OBS" moodCode="EVN">
+                            <templateId root="2.16.840.1.113883.10.20.1.31"/>
+                            <code code="33747-0" codeSystem="2.16.840.1.113883.6.1" 
+                                  displayName="General blood chemistry panel"/>
+                            <statusCode code="completed"/>
+                            <effectiveTime value="20240110"/>
+                            <value xsi:type="PQ" value="92" unit="mg/dL"/>
+                            <interpretationCode code="N" codeSystem="2.16.840.1.113883.5.83" 
+                                              displayName="Normal"/>
+                        </observation>
+                    </entry>
+                    <entry>
+                        <observation classCode="OBS" moodCode="EVN">
+                            <code code="2093-3" codeSystem="2.16.840.1.113883.6.1" 
+                                  displayName="Cholesterol [Mass/volume] in Serum or Plasma"/>
+                            <statusCode code="completed"/>
+                            <effectiveTime value="20240110"/>
+                            <value xsi:type="PQ" value="185" unit="mg/dL"/>
+                            <interpretationCode code="N" codeSystem="2.16.840.1.113883.5.83" 
+                                              displayName="Normal"/>
+                        </observation>
+                    </entry>
+                </section>
+            </component>
+            
+            <component>
+                <section>
+                    <templateId root="2.16.840.1.113883.10.20.1.16"/>
+                    <code code="8716-3" codeSystem="2.16.840.1.113883.6.1" 
+                          displayName="Vital signs"/>
+                    <title>Signos Vitales</title>
+                    <text>Signos vitales estables durante la consulta.</text>
+                    <entry>
+                        <observation classCode="OBS" moodCode="EVN">
+                            <code code="8480-6" codeSystem="2.16.840.1.113883.6.1" 
+                                  displayName="Systolic blood pressure"/>
+                            <statusCode code="completed"/>
+                            <effectiveTime value="20240115"/>
+                            <value xsi:type="PQ" value="130" unit="mm[Hg]"/>
+                        </observation>
+                    </entry>
+                    <entry>
+                        <observation classCode="OBS" moodCode="EVN">
+                            <code code="8462-4" codeSystem="2.16.840.1.113883.6.1" 
+                                  displayName="Diastolic blood pressure"/>
+                            <statusCode code="completed"/>
+                            <effectiveTime value="20240115"/>
+                            <value xsi:type="PQ" value="80" unit="mm[Hg]"/>
+                        </observation>
+                    </entry>
+                </section>
+            </component>
+        </structuredBody>
+    </component>
+</ClinicalDocument>

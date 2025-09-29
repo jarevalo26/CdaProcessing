@@ -18,7 +18,7 @@ class UploadHandler {
         this.setupDragAndDrop();
         this.setupFileInput();
         this.setupActionButtons();
-        this.setupFileRemoval(); // NUEVA LÍNEA
+        this.setupFileRemoval();
         this.hideDashboard();
         
         // Inicializar WASM
@@ -611,18 +611,24 @@ class UploadHandler {
             filesContainer.remove();
         }
         
-        // Limpiar parsers
-        if (this.wasmInitialized && window.wasmParser) {
-            window.wasmParser.clear();
-        }
-        if (window.jsParser) {
-            window.jsParser.clear();
-        }
-        if (window.tsParser) {
-            window.tsParser.clear();
+        try {
+            if (window.jsParser && window.jsParser.clear) {
+                window.jsParser.clear();
+            }
+        } catch (error) {
+            console.warn('Error al limpiar JS parser:', error);
         }
         
-        // Ocultar dashboard y performance
+        try {
+            if (window.tsParser && window.tsParser.clear) {
+                window.tsParser.clear();
+            }
+        } catch (error) {
+            console.warn('Error al limpiar TS parser:', error);
+        }
+
+        this.wasmInitialized = false;
+        
         this.hideDashboard();
         const performanceSection = document.getElementById('performance-section');
         if (performanceSection) {
@@ -631,6 +637,13 @@ class UploadHandler {
         
         this.updateUI();
         this.fileInput.value = '';
+
+        // Reinicializar WASM si es necesario
+        setTimeout(() => {
+            if (!this.wasmInitialized) {
+                this.initializeWasm();
+            }
+        }, 500);
     }
 
     setupFileRemoval() {

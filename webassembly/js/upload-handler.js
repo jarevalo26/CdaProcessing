@@ -104,7 +104,6 @@ class UploadHandler {
             if (this.isValidFile(file)) {
                 this.uploadedFiles.push(file);
                 this.showFileInList(file);
-                console.log('Archivo válido:', file.name);
             } else {
                 alert(`Archivo no válido: ${file.name}. Solo se aceptan archivos .xml o .cda menores a 10MB`);
             }
@@ -324,7 +323,7 @@ class UploadHandler {
             
             // Ejecutar benchmark de los 3 parsers
             this.benchmarkResults = await this.runTripleParserBenchmark();
-            
+              
             // Usar datos médicos del WebAssembly
             this.currentStats = this.benchmarkResults.wasmStats;
             let tsStats = this.benchmarkResults.tsStats;
@@ -370,33 +369,18 @@ class UploadHandler {
         
         // 1. WebAssembly Parser
         this.updateLoadingProgress('Procesando con WebAssembly...');
-        const wasmStartTime = (typeof performance !== 'undefined' && performance.now) 
-                     ? performance.now() 
-                     : Date.now();
         const wasmStats = await window.wasmParser.parseFiles(this.uploadedFiles);
-        const wasmTime = ((typeof performance !== 'undefined' && performance.now) 
-                 ? performance.now() 
-                 : Date.now()) - wasmStartTime;
+        const wasmTime = wasmStats.processing_time_ms || 0;
         
         // 2. JavaScript Parser
         this.updateLoadingProgress('Procesando con JavaScript nativo...');
-        const jsStartTime = (typeof performance !== 'undefined' && performance.now) 
-                   ? performance.now() 
-                   : Date.now();
         const jsStats = await window.jsParser.parseFiles(this.uploadedFiles);
-        const jsTime = ((typeof performance !== 'undefined' && performance.now) 
-               ? performance.now() 
-               : Date.now()) - jsStartTime;
+        const jsTime = jsStats.processing_time_ms || 0;
         
         // 3. TypeScript Parser
         this.updateLoadingProgress('Procesando con TypeScript...');
-        const tsStartTime = (typeof performance !== 'undefined' && performance.now) 
-                   ? performance.now() 
-                   : Date.now();
         const tsStats = await window.tsParser.parseFiles(this.uploadedFiles);
-        const tsTime = ((typeof performance !== 'undefined' && performance.now) 
-               ? performance.now() 
-               : Date.now()) - tsStartTime;
+        const tsTime = tsStats.processing_time_ms || 0;
         
         this.updateLoadingProgress('Calculando resultados...');
         
@@ -650,21 +634,21 @@ class UploadHandler {
     }
 
     setupFileRemoval() {
-    // Event delegation para botones de eliminar
-    document.addEventListener('click', (e) => {
-        if (e.target.classList.contains('remove-file')) {
-            e.stopPropagation();
-            e.preventDefault();
-            
-            // Obtener el nombre del archivo desde el elemento padre
-            const fileElement = e.target.closest('.uploaded-file');
-            if (fileElement) {
-                const fileName = fileElement.querySelector('.file-name').textContent;
-                this.removeFile(fileName);
+        // Event delegation para botones de eliminar
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-file')) {
+                e.stopPropagation();
+                e.preventDefault();
+                
+                // Obtener el nombre del archivo desde el elemento padre
+                const fileElement = e.target.closest('.uploaded-file');
+                if (fileElement) {
+                    const fileName = fileElement.querySelector('.file-name').textContent;
+                    this.removeFile(fileName);
+                }
             }
-        }
-    });
-}
+        });
+    }
 }
 
 // Inicializar cuando el DOM esté listo

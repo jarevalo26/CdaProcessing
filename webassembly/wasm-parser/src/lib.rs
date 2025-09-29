@@ -3,7 +3,18 @@ use quick_xml::events::Event;
 use quick_xml::Reader;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use once_cell::sync::Lazy;
 use regex::Regex;
+
+static MED_PATTERNS: Lazy<Vec<Regex>> = Lazy::new(|| {
+    vec![
+        Regex::new(r"(?i)\b\w+(?:cillin|mycin|prazole|statin|tide|pine|zole|pril|sartan)\b").unwrap(),
+        Regex::new(r"(?i)\b\w+\s*(?:mg|tablet|capsule|injection)\b").unwrap(),
+        Regex::new(r"(?i)\baspirin\b|\bibuprofen\b|\bparacetamol\b|\bmetformin\b|\benalapril\b|\batorvastatin\b|\bsalbutamol\b|\bbudesonida\b|\bwarfarin\b").unwrap(),
+    ]
+});
+
+
 
 // Importar console.log para debugging
 #[wasm_bindgen]
@@ -81,32 +92,28 @@ pub struct CDAParser {
 impl CDAParser {
     #[wasm_bindgen(constructor)]
     pub fn new() -> CDAParser {
-        console_log!("CDA Parser WebAssembly inicializado");
+        //console_log!("CDA Parser WebAssembly inicializado");
         CDAParser {
             documents: Vec::new(),
         }
     }
 
     #[wasm_bindgen]
-    pub fn parse_file(&mut self, file_name: &str, xml_content: &str) -> Result<String, JsValue> {
-        console_log!("Parseando archivo: {}", file_name);
-        
+    pub fn parse_file(&mut self, file_name: &str, xml_content: &str) -> Result<String, JsValue> {      
         match self.parse_cda_document(file_name, xml_content) {
             Ok(document) => {
                 self.documents.push(document);
                 Ok("Success".to_string())
             }
             Err(e) => {
-                console_log!("Error parseando {}: {}", file_name, e);
+                //console_log!("Error parseando {}: {}", file_name, e);
                 Err(JsValue::from_str(&format!("Error parsing {}: {}", file_name, e)))
             }
         }
     }
 
     #[wasm_bindgen]
-    pub fn get_statistics(&self) -> Result<JsValue, JsValue> {
-        console_log!("Calculando estadísticas para {} documentos", self.documents.len());
-        
+    pub fn get_statistics(&self) -> Result<JsValue, JsValue> {      
         let stats = self.calculate_statistics();
         match serde_wasm_bindgen::to_value(&stats) {
             Ok(js_value) => Ok(js_value),
@@ -117,7 +124,7 @@ impl CDAParser {
     #[wasm_bindgen]
     pub fn clear(&mut self) {
         self.documents.clear();
-        console_log!("Parser limpiado");
+        //console_log!("Parser limpiado");
     }
 
     #[wasm_bindgen]
@@ -127,6 +134,49 @@ impl CDAParser {
             Err(e) => Err(JsValue::from_str(&format!("Error serializing documents: {:?}", e)))
         }
     }
+
+    #[wasm_bindgen]
+    pub fn parse_files_batch(&mut self, files_data: JsValue) -> Result<JsValue, JsValue> {
+        use std::time::Instant;
+        let start_time = Instant::now();
+
+        // Deserializar el array de archivos desde JavaScript
+        let files: Vec<serde_json::Value> = serde_wasm_bindgen::from_value(files_data)
+            .map_err(|e| JsValue::from_str(&format!("Error deserializando archivos: {:?}", e)))?;
+        
+        // Crear vector temporal para documentos
+        let mut temp_documents = Vec::new();
+
+        for file_data in files {
+            if let (Some(file_name), Some(content)) = (
+                file_data.get("name").and_then(|v| v.as_str()),
+                file_data.get("content").and_then(|v| v.as_str())
+            ) {
+                match self.parse_cda_document(file_name, content) {
+                    Ok(document) => {
+                        temp_documents.push(document);
+                    }
+                    Err(_e) => {
+                        console_log!("Error procesando {}: {}", file_name, _e);
+                    }
+                }
+            }
+        }
+
+        // Una sola asignación al final
+        self.documents = temp_documents;
+
+        // Ahora calcular estadísticas
+        let duration = start_time.elapsed();
+        let processing_time_ms = duration.as_millis() as u64;
+
+        let mut stats = self.calculate_statistics();
+        stats.processing_time_ms = processing_time_ms;
+
+        serde_wasm_bindgen::to_value(&stats)
+            .map_err(|e| JsValue::from_str(&format!("Error serializando estadísticas: {:?}", e)))
+    }
+
 }
 
 impl CDAParser {
@@ -161,6 +211,7 @@ impl CDAParser {
                     
                     // Extraer atributos importantes
                     self.extract_attributes(&mut document, &tag_name, e, &current_path);
+                    //self.extract_attributes(&mut document, &tag_name, e, &current_path, &reader);
                 }
                 Ok(Event::End(ref e)) => {
                     let tag_name = String::from_utf8_lossy(e.name().as_ref()).to_lowercase();
@@ -186,26 +237,25 @@ impl CDAParser {
         // Post-procesamiento
         self.post_process_document(&mut document);
         
-        console_log!("Documento parseado: {} diagnósticos, {} medicamentos", 
-                    document.diagnoses.len(), document.medications.len());
+        //console_log!("Documento parseado: {} diagnósticos, {} medicamentos", document.diagnoses.len(), document.medications.len());
         
         Ok(document)
     }
 
-    fn extract_attributes(&self, document: &mut CDADocument, tag_name: &str, element: &quick_xml::events::BytesStart, path: &[String]) {
+    fn extract_attributes(
+        &self, 
+        document: &mut CDADocument, 
+        tag_name: &str, 
+        element: &quick_xml::events::BytesStart, 
+        path: &[String]
+    ) {
         for attr in element.attributes() {
             if let Ok(attr) = attr {
                 let attr_name = String::from_utf8_lossy(attr.key.as_ref()).to_lowercase();
                 let attr_value = String::from_utf8_lossy(&attr.value);
-                
-                // Debug para género
-                if tag_name == "administrativegendercode" {
-                    console_log!("RUST DEBUG: Encontrado {} con atributo {} = {}", tag_name, attr_name, attr_value);
-                }
 
                 match (tag_name, attr_name.as_str()) {
                     ("administrativegendercode", "code") => {
-                        console_log!("RUST: Extrayendo género: {}", attr_value);
                         document.patient.gender = Some(self.normalize_gender(&attr_value));
                     }
                     ("birthtime", "value") => {
@@ -236,9 +286,89 @@ impl CDAParser {
                     }
                     _ => {}
                 }
-            }
+            }                               
         }
     }
+
+    /* fn extract_attributes(
+        &self,
+        document: &mut CDADocument,
+        tag_name: &str,
+        element: &quick_xml::events::BytesStart,
+        path: &[String],
+        reader: &Reader<&[u8]>, 
+    ) {
+        for attr in element.attributes() {
+            if let Ok(attr) = attr {
+                if let Ok(attr_value) = attr.unescape_and_decode_value(reader) {
+                    let attr_name = String::from_utf8_lossy(attr.key.as_ref()).to_ascii_lowercase();
+
+                    match (tag_name, attr_name.as_str()) {
+                        ("administrativegendercode", "code") => {
+                            console_log!(
+                                "[WASM] Gender attr found → {} = {}",
+                                attr_name,
+                                attr_value
+                            );
+                            document.patient.gender = Some(self.normalize_gender(&attr_value));
+                        }
+                        ("birthtime", "value") => {
+                            console_log!(
+                                "[WASM] Birthtime attr found → {} = {}",
+                                attr_name,
+                                attr_value
+                            );
+                            document.patient.birth_date = Some(attr_value.clone());
+                            document.patient.age = self.calculate_age_from_hl7_date(&attr_value);
+                        }
+                        ("effectivetime", "value") if path.len() <= 3 => {
+                            console_log!(
+                                "[WASM] EffectiveTime (doc date) → {} = {}",
+                                attr_name,
+                                attr_value
+                            );
+                            document.document_date = Some(attr_value.clone());
+                        }
+                        ("code", "displayname") => {
+                            if self.is_diagnosis_context(path) {
+                                console_log!(
+                                    "[WASM] Diagnosis (displayName) → {}",
+                                    attr_value
+                                );
+                                document.diagnoses.push(Diagnosis {
+                                    code: None,
+                                    name: attr_value.clone(),
+                                    code_system: None,
+                                });
+                            }
+                        }
+                        ("code", "code") => {
+                            if self.is_diagnosis_context(path) && !document.diagnoses.is_empty() {
+                                console_log!(
+                                    "[WASM] Diagnosis (code) → {}",
+                                    attr_value
+                                );
+                                if let Some(last_diagnosis) = document.diagnoses.last_mut() {
+                                    last_diagnosis.code = Some(attr_value.clone());
+                                }
+                            }
+                        }
+                        ("id", "extension") if path.contains(&"patient".to_string()) => {
+                            console_log!(
+                                "[WASM] Patient ID → {}",
+                                attr_value
+                            );
+                            document.patient.id = Some(attr_value.clone());
+                        }
+                        _ => {
+                            // Debug opcional para tags frecuentes
+                            // console_log!("[WASM] Ignored attr {} = {}", attr_name, attr_value);
+                        }
+                    }
+                }
+            }
+        }
+    } */
 
     fn process_text_content(&self, document: &mut CDADocument, tag_name: &str, text: &str, path: &[String]) {
         match tag_name {
@@ -297,25 +427,16 @@ impl CDAParser {
         let text_lower = text.to_lowercase();
         
         // Extraer diagnósticos del título del documento
-        self.extract_diagnoses_from_title(document, text);
-        
-        // Buscar medicamentos por patrones comunes
-        let med_patterns = [
-            r"\b\w+(?:cillin|mycin|prazole|statin|tide|pine|zole|pril|sartan)\b",
-            r"\b\w+\s*(?:mg|tablet|capsule|injection)\b",
-            r"\baspirin\b|\bibuprofen\b|\bparacetamol\b|\bmetformin\b|\benalapril\b|\batorvastatin\b|\bsalbutamol\b|\bbudesonida\b|\bwarfarin\b",
-        ];
-        
-        for pattern in &med_patterns {
-            if let Ok(re) = Regex::new(pattern) {
-                for mat in re.find_iter(&text_lower) {
-                    let med_name = mat.as_str().to_string();
-                    if med_name.len() > 3 && !self.is_duplicate_medication(document, &med_name) {
-                        document.medications.push(Medication {
-                            name: med_name,
-                            medication_type: "text_extracted".to_string(),
-                        });
-                    }
+        self.extract_diagnoses_from_title(document, text);            
+
+        for re in MED_PATTERNS.iter() {
+            for mat in re.find_iter(&text_lower) {
+                let med_name = mat.as_str().to_string();
+                if med_name.len() > 3 && !self.is_duplicate_medication(document, &med_name) {
+                    document.medications.push(Medication {
+                        name: med_name,
+                        medication_type: "text_extracted".to_string(),
+                    });
                 }
             }
         }
@@ -426,23 +547,17 @@ impl CDAParser {
     }
 
     fn normalize_gender(&self, gender_code: &str) -> String {
-        console_log!("RUST normalize_gender: input='{}' len={}", gender_code, gender_code.len());
+        //console_log!("RUST normalize_gender: input='{}' len={}", gender_code, gender_code.len());
         let result = match gender_code.to_uppercase().as_str() {
             "M" | "MALE" => "M".to_string(),
             "F" | "FEMALE" => "F".to_string(),
             _ => {
-                console_log!("RUST: Género no reconocido: '{}'", gender_code);
+                //console_log!("RUST: Género no reconocido: '{}'", gender_code);
                 "Unknown".to_string()
             }
         };
-
-        /* match gender_code.to_uppercase().as_str() {
-            "M" | "MALE" => "M".to_string(),
-            "F" | "FEMALE" => "F".to_string(),
-            _ => "Unknown".to_string(),
-        } */
         
-        console_log!("RUST normalize_gender: output='{}'", result);
+        //console_log!("RUST normalize_gender: output='{}'", result);
         result
     }
 
@@ -486,8 +601,7 @@ impl CDAParser {
         document.medications.sort_by(|a, b| a.name.cmp(&b.name));
         document.medications.dedup_by(|a, b| a.name.to_lowercase() == b.name.to_lowercase());
         
-        console_log!("Post-procesamiento completado: {} diagnósticos, {} medicamentos", 
-                    document.diagnoses.len(), document.medications.len());
+        //console_log!("Post-procesamiento completado: {} diagnósticos, {} medicamentos", document.diagnoses.len(), document.medications.len());
     }
 
     fn calculate_statistics(&self) -> Statistics {
@@ -496,6 +610,9 @@ impl CDAParser {
         let mut medication_counts: HashMap<String, u32> = HashMap::new();
         let mut total_age = 0u32;
         let mut age_count = 0u32;
+
+        use std::time::Instant;
+        let start_time = Instant::now();
 
         for doc in &self.documents {
             // Contar géneros
@@ -536,6 +653,9 @@ impl CDAParser {
             .take(5)
             .map(|(name, count)| MedicationCount { name, count })
             .collect();
+        
+        let duration = start_time.elapsed();
+        let processing_time_ms = duration.as_millis() as u64;
 
         Statistics {
             total_documents: self.documents.len() as u32,
@@ -544,7 +664,7 @@ impl CDAParser {
             gender_distribution,
             top_diagnoses,
             top_medications,
-            processing_time_ms: 0, // Se calculará desde JavaScript
+            processing_time_ms, // Usar el tiempo pasado como parámetro
         }
     }
 }
@@ -552,5 +672,5 @@ impl CDAParser {
 // Inicialización WASM
 #[wasm_bindgen(start)]
 pub fn main() {
-    console_log!("CDA Parser WebAssembly cargado correctamente");
+    //console_log!("CDA Parser WebAssembly cargado correctamente");
 }

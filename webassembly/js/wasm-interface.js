@@ -12,9 +12,7 @@ class WasmCDAParser {
     }
     
     async initialize() {
-        try {
-            console.log('Intentando inicializar WebAssembly...');
-            
+        try {          
             // Intentar cargar WASM
             const wasmModule = await import('./cda_parser_wasm.js');
             await wasmModule.default();
@@ -24,45 +22,47 @@ class WasmCDAParser {
             this.isInitialized = true;
             this.useWasm = true;
             
-            console.log('WebAssembly inicializado correctamente');
             return true;
             
         } catch (error) {
-            console.warn('WebAssembly no disponible, usando fallback JavaScript:', error.message);
-            
-            // Fallback: usar simulación JavaScript
+            console.warn('WebAssembly no disponible, usando fallback JavaScript:', error.message);            
             this.isInitialized = true;
             this.useWasm = false;
             
             return true;
         }
     }
-    
+       
     async parseFiles(files) {
-        if (!this.isInitialized) {
-            throw new Error('Parser no está inicializado');
-        }
-        
-        const startTime = (typeof performance !== 'undefined' && performance.now) 
-                     ? performance.now() 
-                     : Date.now();
-        
-        if (this.useWasm) {
-            return await this.parseFilesWithWasm(files);
-        } else {
-            return await this.parseFilesWithFallback(files);
+        if (!this.isInitialized) throw new Error('Parser no está inicializado');
+
+        console.log(`Procesando ${files.length} archivos con WebAssembly (batch)...`);
+
+        // construir payload una sola vez
+        const filesData = await Promise.all(files.map(async f => ({
+            name: f.name,
+            content: await this.readFileContent(f)
+        })));
+
+        try {
+            // Llamada única al método batch del WASM
+            const stats = this.parser.parse_files_batch(filesData);
+            //return await this.parseFilesWithFallback(files);
+            // stats probablemente sea un objeto JS ya serializado por wasm-bindgen   
+            return stats;         
+        } catch (e) {
+            console.error("Error al Llamar al método batch del WASM:", e);
+            return await this.parseFilesWithFallback(files); // tu fallback actual
         }
     }
-    
-    async parseFilesWithWasm(files) {
-        console.log(`Procesando ${files.length} archivos con WebAssembly...`);
-        
+
+
+    /* async parseFilesWithWasm(files) {                
         const startTime = (typeof performance !== 'undefined' && performance.now) 
                      ? performance.now() 
                      : Date.now();
-
         this.parser.clear();
-        console.log(`parseFilesWithWasm - startTime: ${startTime}`);
+        console.log(`Procesando ${files.length} archivos con WebAssembly en lote...`);
 
         for (let file of files) {
             try {
@@ -73,13 +73,16 @@ class WasmCDAParser {
                 console.error(`Error procesando ${file.name} con WASM:`, error);
             }
         }
-        
+
+       // Obtener estadísticas finales
+        console.log(`Me reviento acaaaaaaaaaaa!!!!`);
         const stats = this.parser.get_statistics();
-        const processingTime = performance.now() - startTime;
-        stats.processing_time_ms = Math.round(processingTime);
+        //const processingTime = performance.now() - startTime;
+        //stats.processing_time_ms = Math.round(processingTime);
         
+        console.log(`WebAssembly procesamiento en lote completado en ${processingTime}ms`);
         return stats;
-    }
+    } */
     
     async parseFilesWithFallback(files) {
         console.log(`Procesando ${files.length} archivos con fallback JavaScript...`);
@@ -88,14 +91,12 @@ class WasmCDAParser {
                      ? performance.now() 
                      : Date.now();
         this.documents = [];
-        
-        // Simular procesamiento de archivos
+
         for (let file of files) {
             try {
                 const content = await this.readFileContent(file);
                 const document = await this.parseXMLContent(file.name, content);
                 this.documents.push(document);
-                console.log(`Fallback: Procesado ${file.name}`);
             } catch (error) {
                 console.error(`Error procesando ${file.name}:`, error);
             }
@@ -104,16 +105,13 @@ class WasmCDAParser {
         const processingTime = performance.now() - startTime;
         const stats = this.calculateStatistics();
         stats.processing_time_ms = Math.round(processingTime);
-        
         return stats;
     }
     
     async parseXMLContent(fileName, xmlContent) {
-        // Simulación básica de parsing XML para archivos CDA
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(xmlContent, "text/xml");
         
-        // Extraer información básica del paciente
         const patient = this.extractPatientInfo(xmlDoc);
         const diagnoses = this.extractDiagnoses(xmlDoc, fileName);
         const medications = this.extractMedications(xmlDoc, fileName);

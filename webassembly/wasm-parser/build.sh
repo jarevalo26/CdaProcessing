@@ -6,7 +6,8 @@ echo "🦀 Compilando CDA Parser a WebAssembly..."
 rm -rf pkg/
 
 # Compilar con wasm-pack
-wasm-pack build --target web --out-dir pkg
+# wasm-pack build --target web --out-dir pkg
+wasm-pack build --target web --out-dir pkg --release
 
 # Verificar si la compilación fue exitosa
 if [ $? -eq 0 ]; then

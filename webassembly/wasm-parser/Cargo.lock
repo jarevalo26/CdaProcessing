@@ -48,6 +48,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "js-sys",
+ "once_cell",
  "quick-xml",
  "regex",
  "serde",

@@ -13,3 +13,89 @@
 cd wasm-parser
 ./build.sh
 cp pkg/* ../js/
+
+//// ----------------------------------------
+
+use std::time::Instant;
+let start_time = Instant::now();
+let duration = start_time.elapsed();
+let processing_time_ms = duration.as_millis() as u64;
+
+fn calculate_statistics(&self, processing_time_ms: u64) -> Statistics {
+
+    pub fn parse_file(&mut self, file_name: &str, xml_content: &str) -> Result<String, JsValue> {       
+        match self.parse_cda_document(file_name, xml_content) {
+            Ok(document) => {
+                self.documents.push(document);
+                Ok("Success".to_string())
+            }
+            Err(e) => {
+                console_log!("Error parseando {}: {}", file_name, e);
+                Err(JsValue::from_str(&format!("Error parsing {}: {}", file_name, e)))
+            }
+        }
+    }
+
+
+
+    fn parse_cda_document(&self, file_name: &str, xml_content: &str) -> Result<CDADocument, String> {
+        let mut reader = Reader::from_str(xml_content);
+        reader.trim_text(true);
+
+        let mut document = CDADocument {
+            file_name: file_name.to_string(),
+            patient: Patient {
+                id: None,
+                name: None,
+                gender: None,
+                birth_date: None,
+                age: None,
+            },
+            diagnoses: Vec::new(),
+            medications: Vec::new(),
+            document_date: None,
+            author: None,
+        };
+
+        let mut buf = Vec::new();
+        let mut current_path = Vec::new();
+        let mut current_text = String::new();
+
+        loop {
+            match reader.read_event_into(&mut buf) {
+                Ok(Event::Start(ref e)) => {
+                    let tag_name = String::from_utf8_lossy(e.name().as_ref()).to_lowercase();
+                    current_path.push(tag_name.clone());
+                    
+                    // Extraer atributos importantes
+                    self.extract_attributes(&mut document, &tag_name, e, &current_path);
+                    //self.extract_attributes(&mut document, &tag_name, e, &current_path, &reader);
+                }
+                Ok(Event::End(ref e)) => {
+                    let tag_name = String::from_utf8_lossy(e.name().as_ref()).to_lowercase();
+                    
+                    // Procesar texto acumulado
+                    if !current_text.trim().is_empty() {
+                        self.process_text_content(&mut document, &tag_name, &current_text.trim(), &current_path);
+                        current_text.clear();
+                    }
+                    
+                    current_path.pop();
+                }
+                Ok(Event::Text(e)) => {
+                    current_text.push_str(&e.unescape().unwrap_or_default());
+                }
+                Ok(Event::Eof) => break,
+                Err(e) => return Err(format!("Error reading XML: {:?}", e)),
+                _ => {}
+            }
+            buf.clear();
+        }
+
+        // Post-procesamiento
+        self.post_process_document(&mut document);
+        
+        //console_log!("Documento parseado: {} diagnósticos, {} medicamentos", document.diagnoses.len(), document.medications.len());
+        
+        Ok(document)
+    }

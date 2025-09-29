@@ -15,6 +15,7 @@ js-sys = "0.3"
 chrono = { version = "0.4", features = ["serde"] }
 regex = "1.10"
 serde-wasm-bindgen = "0.4"
+once_cell = "1.20"
 
 [dependencies.web-sys]
 version = "0.3"
@@ -22,4 +23,11 @@ features = [
   "console",
   "File",
   "FileReader",
+  "Window",
 ]
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
